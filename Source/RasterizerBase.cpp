@@ -41,17 +41,12 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 	if (hMainWindow == NULL)
 		MessageBox(NULL, "Wasn't Possible create the Window", "ERROR", MB_OK | MB_ICONERROR);
 
-	// Copy Dimensions
-	Width = width;
-	Height = height;
-
 	// Get the dimensions of the Back Buffer
 	RECT rc;
 	GetClientRect(hMainWindow, &rc);
 
 	Width = (uint16_t)rc.right;
 	Height = (uint16_t)rc.bottom;
-
 
 	// Allocate Back Buffer
 	BackBuffer = new RGB8Color[Width*Height];
@@ -66,12 +61,11 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 */
 
 // SetPixlRGB8 method
-//! This must be the method utilized to access pixels not the GDI functions 
+//! This must be the method utilized to access pixels the pixels 
 void RasterizerBase::SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8Color color)
 {
 	BackBuffer[Height*y + x] = color;
 }
-
 
 void RasterizerBase::ClearBackBuffer(RGB8Color color)
 {
