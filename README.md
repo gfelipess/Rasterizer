@@ -1,5 +1,5 @@
 # My Rasterizer Project
-An adventure thourgh the world of vertices, pixels and texels.
+An adventure through the world of vertices, pixels and texels.
 
 ## About
 Rasterizer is an project created with the main aim of help-me during the reading of the classic 
