@@ -24,9 +24,12 @@ using namespace std;
 
 class RasterizerBase
 {
-	// Back Buffer
+	// Render Target
 	RGB8Color* BackBuffer;
 	RGB8Color* FrontBuffer;
+
+	// 32 bit-precision Depth Buffer [0,1]
+	double* DepthBuffer;
 
 	uint16_t Width, Height;
 	HWND hMainWindow;

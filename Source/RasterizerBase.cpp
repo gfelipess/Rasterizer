@@ -1,6 +1,6 @@
 #include "..\Include\RasterizerBase.h"
 
-//TODO: - 1 Continue the implementation an fast pixel copy operation using BitBlit
+//TODO: - 1 Continue the implementation the best fast pixel copy operation using BitBlit
 
 RasterizerBase::RasterizerBase() {}
 RasterizerBase::~RasterizerBase() 
@@ -9,6 +9,8 @@ RasterizerBase::~RasterizerBase()
 		delete[] BackBuffer;
 	if (FrontBuffer)
 		delete[] FrontBuffer;
+	if (DepthBuffer)
+		delete[] DepthBuffer;
 }
 
 /* 
@@ -49,10 +51,13 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 	Height = (uint16_t)rc.bottom;
 
 	// Allocate Back Buffer
-	BackBuffer = new RGB8Color[Width*Height];
+	BackBuffer  = new RGB8Color[Width*Height];
 
 	// Allocate Front Buffer
 	FrontBuffer = new RGB8Color[Width*Height];
+
+	// Allocate Depth Buffer
+	DepthBuffer = new double[Width*Height];
 }
 
 
@@ -69,10 +74,15 @@ void RasterizerBase::SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8
 
 void RasterizerBase::ClearBackBuffer(RGB8Color color)
 {
-	// Clear Back Buffer
+	// Clear Back Buffer and Depth Buffer
 	for (uint16_t y = 0; y < Height; ++y)
 		for (uint16_t x = 0; x < Width; ++x)
+		{
 			BackBuffer[y*Height + x] = color;
+			// Clear to the max value so any new value 
+			// get updated for the pixel
+			DepthBuffer[y*Height + x] = 1.0;
+		}
 }
 
 void RasterizerBase::SwapBuffers()
