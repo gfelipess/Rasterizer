@@ -11,8 +11,7 @@ class RGB8Color
 {
 
 public:
-	uint8_t r, g, b, 
-		a; // unused for now, only for make word alignment easier 
+	uint8_t r, g, b;
 
 	// Constructor
 	RGB8Color(uint8_t R = 0, uint8_t G = 0, uint8_t B = 0);

@@ -1,7 +1,5 @@
 #include "..\Include\RasterizerBase.h"
 
-//TODO: - 1 Continue the implementation the best fast pixel copy operation using BitBlit
-
 RasterizerBase::RasterizerBase() {}
 RasterizerBase::~RasterizerBase() 
 {
@@ -50,6 +48,9 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 	Width = (uint16_t)rc.right;
 	Height = (uint16_t)rc.bottom;
 
+	// Get Window Device Context
+	const HDC hdc = GetDC(hMainWindow);
+
 	// Allocate Back Buffer
 	BackBuffer  = new RGB8Color[Width*Height];
 
@@ -58,6 +59,20 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 
 	// Allocate Depth Buffer
 	DepthBuffer = new double[Width*Height];
+
+	// Initialize the Memory that the GDI library will receive
+	BITMAPINFO bitmap;
+	ZeroMemory(&bitmap, sizeof(bitmap));
+
+	bitmap.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bitmap.bmiHeader.biWidth = Width;
+	bitmap.bmiHeader.biHeight = Height;
+	bitmap.bmiHeader.biPlanes = 1;
+	bitmap.bmiHeader.biBitCount = 24;
+	bitmap.bmiHeader.biCompression = BI_RGB;
+
+	// Create the Handle to the Device Independent Bitmap
+	BufferBitmap = CreateDIBSection(hdc, &bitmap, DIB_RGB_COLORS, (void**)&GDIMemory, NULL, 0);
 }
 
 
@@ -65,32 +80,48 @@ void RasterizerBase::InitRasterizer(const uint16_t width, const uint16_t height,
 										Low-Level Methods
 */
 
-// SetPixlRGB8 method
-//! This must be the method utilized to access pixels the pixels 
+//Per-Pixel Methods
 void RasterizerBase::SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8Color color)
 {
-	BackBuffer[Height*y + x] = color;
+	// Change endianness
+	// GDI uses BGR not RGB
+	RGB8Color color_gdi;
+	color_gdi.r = color.b;
+	color_gdi.g = color.g;
+	color_gdi.b = color.r;
+
+	BackBuffer[Width*y + x] = color_gdi;
 }
 
+// Clear Methods
 void RasterizerBase::ClearBackBuffer(RGB8Color color)
 {
-	// Clear Back Buffer and Depth Buffer
+	// Clear Back Buffer 
 	for (uint16_t y = 0; y < Height; ++y)
 		for (uint16_t x = 0; x < Width; ++x)
 		{
-			BackBuffer[y*Height + x] = color;
-			// Clear to the max value so any new value 
-			// get updated for the pixel
-			DepthBuffer[y*Height + x] = 1.0;
+			SetPixelRGB8(x, y, color);
 		}
 }
 
+void RasterizerBase::ClearDepthBuffer(double value)
+{
+	// Clear Depth Buffer 
+	for (uint16_t y = 0; y < Height; ++y)
+		for (uint16_t x = 0; x < Width; ++x)
+		{
+			DepthBuffer[Width*y + x] = value;
+		}
+}
+
+// Swap and Presentation
 void RasterizerBase::SwapBuffers()
 {
 	// Swap Back and Front Buffer
-	RGB8Color* const tmp = BackBuffer;
-	BackBuffer = FrontBuffer;
-	FrontBuffer = tmp;
+	swap(BackBuffer, FrontBuffer);
+
+	// Fill the GDI memory
+	memcpy((void*)GDIMemory, (void*)FrontBuffer, Width*Height*sizeof(RGB8Color));
 }
 
 void RasterizerBase::Present()
@@ -105,23 +136,15 @@ void RasterizerBase::Present()
 			Copy Pixels from the Front Buffer to the Window
 	*/
 
-	// Bitmap to represent the back buffer for using the GDI functions
-	HBITMAP bitmap;
+	// Handle the Bitmap
+	HDC hdcmem = CreateCompatibleDC(hdc);
 
-	// Create an Memory device context compatible with the device context
-	HDC hMDC = CreateCompatibleDC(hdc);
-	bitmap = CreateCompatibleBitmap(hdc, Width, Height);
+	// Pass the bitmap information to the memory handle
+	SelectObject(hdcmem, BufferBitmap);
 
-	// Use an colored bitmap
-	SelectObject(hMDC, bitmap);
+	// Copy from the Front Buffer to the Window
+	BitBlt(hdc, 0, 0, Width, Height, hdcmem, 0, 0, SRCCOPY);
 
-	// Describe the Bitmap
-	BITMAPINFO bitmapInfo;
-
-	// Copy Pixes from the Front Buffer to the GDI interface
-	SetDIBits(hdc, bitmap, 0, Height, (void*)FrontBuffer, &bitmapInfo, 0);
-
-	DeleteObject(bitmap);
 	// End drawing on the window
 	EndPaint(hMainWindow, &ps);
 }

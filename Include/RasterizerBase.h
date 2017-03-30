@@ -27,6 +27,10 @@ class RasterizerBase
 	// Render Target
 	RGB8Color* BackBuffer;
 	RGB8Color* FrontBuffer;
+	
+	// Memory for the GDI API
+	HBITMAP	   BufferBitmap;
+	RGB8Color* GDIMemory;
 
 	// 32 bit-precision Depth Buffer [0,1]
 	double* DepthBuffer;
@@ -54,6 +58,7 @@ public:
 	
 	// Clear Back Buffer
 	void ClearBackBuffer(RGB8Color color);
+	void ClearDepthBuffer(double value);
 
 	// Swap Buffers
 	void SwapBuffers();
