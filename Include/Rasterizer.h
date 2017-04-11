@@ -6,7 +6,19 @@
 #define _RASTERIZER_H_
 
 #include "RasterizerBase.h"
-#include "ScanConverting.h"
+#include "PolygonFilling.h"
+
+class Rasterizer : public  RasterizerBase
+{
+	// Control Polygons ordering during rasterization 
+	ActiveEdgeTable AET;
+
+public:
+	Rasterizer();
+	~Rasterizer();
+
+	void RasterizerPolygons();
+};
 
 
 

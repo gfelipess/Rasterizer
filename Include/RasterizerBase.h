@@ -28,37 +28,35 @@ class RasterizerBase
 	RGB8Color* BackBuffer;
 	RGB8Color* FrontBuffer;
 	
+	// 32 bit-precision Depth Buffer [0,1]
+	double* DepthBuffer;
+
+	// Stencil Buffer
+	uint8_t* StencilBuffer;
+
 	// Memory for the GDI API
 	HBITMAP	   BufferBitmap;
 	RGB8Color* GDIMemory;
 
-	// 32 bit-precision Depth Buffer [0,1]
-	double* DepthBuffer;
-
+	// Window Information
 	uint16_t Width, Height;
 	HWND hMainWindow;
+
+protected:
+
+	// Set Pixel on the Back Buffer
+	void SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8Color color);
 
 public:
 	RasterizerBase();
 	~RasterizerBase();
 
-	/*
-									Methods
-	*/
 	
 	void InitRasterizer(const uint16_t width, const uint16_t height, const HINSTANCE hisntance);
 
-	/*
-								Low-Level Methods
-	*/
-
-	// Set Pixel on the Back Buffer
-	void SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8Color color);
-
-	
 	// Clear Back Buffer
-	void ClearBackBuffer(RGB8Color color);
-	void ClearDepthBuffer(double value);
+	void ClearBackBuffer(const RGB8Color color);
+	void ClearDepthBuffer(const double value);
 
 	// Swap Buffers
 	void SwapBuffers();

@@ -9,6 +9,9 @@ RasterizerBase::~RasterizerBase()
 		delete[] FrontBuffer;
 	if (DepthBuffer)
 		delete[] DepthBuffer;
+
+	// Delete Bitmap Buffer
+	DeleteObject(BufferBitmap);
 }
 
 /* 
@@ -94,24 +97,20 @@ void RasterizerBase::SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8
 }
 
 // Clear Methods
-void RasterizerBase::ClearBackBuffer(RGB8Color color)
+void RasterizerBase::ClearBackBuffer(const RGB8Color color)
 {
 	// Clear Back Buffer 
 	for (uint16_t y = 0; y < Height; ++y)
 		for (uint16_t x = 0; x < Width; ++x)
-		{
 			SetPixelRGB8(x, y, color);
-		}
 }
 
-void RasterizerBase::ClearDepthBuffer(double value)
+void RasterizerBase::ClearDepthBuffer(const double value)
 {
 	// Clear Depth Buffer 
 	for (uint16_t y = 0; y < Height; ++y)
 		for (uint16_t x = 0; x < Width; ++x)
-		{
 			DepthBuffer[Width*y + x] = value;
-		}
 }
 
 // Swap and Presentation
@@ -137,7 +136,7 @@ void RasterizerBase::Present()
 	*/
 
 	// Handle the Bitmap
-	HDC hdcmem = CreateCompatibleDC(hdc);
+	const HDC hdcmem = CreateCompatibleDC(hdc);
 
 	// Pass the bitmap information to the memory handle
 	SelectObject(hdcmem, BufferBitmap);
