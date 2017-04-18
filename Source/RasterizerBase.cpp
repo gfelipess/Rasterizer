@@ -117,7 +117,7 @@ void RasterizerBase::ClearDepthBuffer(const double value)
 void RasterizerBase::SwapBuffers()
 {
 	// Swap Back and Front Buffer
-	swap(BackBuffer, FrontBuffer);
+	std::swap(BackBuffer, FrontBuffer);
 
 	// Fill the GDI memory
 	memcpy((void*)GDIMemory, (void*)FrontBuffer, Width*Height*sizeof(RGB8Color));

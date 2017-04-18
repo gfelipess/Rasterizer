@@ -1,6 +1,7 @@
 #include "../Include/PolygonFilling.h"
 
 //Polygon Class
+
 Triangle::Triangle(Vector2 pos1, Vector2 pos2, Vector2 pos3, RGB8Color color)
 {
 	p1 = pos1;
@@ -23,3 +24,25 @@ Triangle::~Triangle(){ }
 // Active Edge Table
 ActiveEdgeTable::ActiveEdgeTable() { }
 ActiveEdgeTable::~ActiveEdgeTable() { }
+
+// Add Polygon to the Table
+void ActiveEdgeTable::AddPolygon(Triangle polygon)
+{
+	
+
+}
+
+void ActiveEdgeTable::GetCurrentScanLine(uint16_t y)
+{
+
+}
+
+void ActiveEdgeTable::CalculateIntersections()
+{
+
+}
+
+void ActiveEdgeTable::DrawSpans()
+{
+
+}

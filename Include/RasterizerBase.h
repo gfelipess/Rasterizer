@@ -20,8 +20,6 @@
 // Color 
 #include "Color.h"
 
-using namespace std;
-
 class RasterizerBase
 {
 	// Render Target
@@ -38,11 +36,11 @@ class RasterizerBase
 	HBITMAP	   BufferBitmap;
 	RGB8Color* GDIMemory;
 
+protected:
+
 	// Window Information
 	uint16_t Width, Height;
 	HWND hMainWindow;
-
-protected:
 
 	// Set Pixel on the Back Buffer
 	void SetPixelRGB8(const uint16_t x, const uint16_t y, const RGB8Color color);
